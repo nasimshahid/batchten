@@ -14,7 +14,7 @@ app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   const isExist = await register.findOne({ email: email });
   if (isExist) {
-    res.send("User Already Exist");
+    res.send({result:"User Already Exist", code:204});
   } else {
     bcrypt.genSalt(saltRounds, function (err, salt) {
         bcrypt.hash(password, salt ,async function (err, hash) {
@@ -25,7 +25,7 @@ app.post("/register", async (req, res) => {
           });
           let result = await users.save();
           if (result) {
-            res.send({result:"Register SuccessFully",result});
+            res.send({result:"Register SuccessFully",code:200});
           }        
         });
     });
