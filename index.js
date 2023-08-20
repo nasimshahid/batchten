@@ -25,7 +25,7 @@ app.post("/register", async (req, res) => {
           name: name,
           email: email,
           password: hash,
-        };  
+        };
         let users = new register(data);
         let result = await users.save();
         if (result) {
@@ -33,66 +33,67 @@ app.post("/register", async (req, res) => {
         }
       });
     });
-  }});
+  }
+});
 // Login Api
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const isExist = await register.findOne({ email: email }); 
+  const isExist = await register.findOne({ email: email });
   if (isExist) {
-    bcrypt.compare(password, isExist.password,async function (err, result) {
+    bcrypt.compare(password, isExist.password, async function (err, result) {
       if (result) {
         const token = jwt.sign({ data: isExist._id }, secretKey, {
           expiresIn: 60 * 60,
         });
-        isExist.token=token
+        isExist.token = token
         await isExist.save()
-        res.send({ result: "Login SuccessFully", token: token });
+        res.send({ errorCode: 200, result: "Login SuccessFully", token: token });
       } else {
-        res.send({ result: "password not match" });
+        res.send({ errorCode: 300, result: "password not match" });
       }
     });
   } else {
-    res.send({ result: "User Not Found" });
+    res.send({ errorCode: 404, result: "User Not Found" });
   }
 });
 
 app.post("/profile", verifyToken, (req, res) => {
-    
+
   res.send("profile");
 });
 
 async function verifyToken(req, res, next) {
   const token = req.headers["authorization"];
 
-//   console.log("request",req);
-  const {email}=req.body
+  //   console.log("request",req);
+  const { email } = req.body
 
-  console.log("tokeno",token);
+  console.log("tokeno", token);
   if (token) {
-    console.log("token1",token);
-    const validToken= token.split(" ")[1];
-    console.log("token3",validToken);
-// console.log("token",validToken);
-    jwt.verify(validToken , secretKey, async(err, result) => {
-        console.log("res",result)
+    console.log("token1", token);
+    const validToken = token.split(" ")[1];
+    console.log("token3", validToken);
+    // console.log("token",validToken);
+    jwt.verify(validToken, secretKey, async (err, result) => {
+      console.log("res", result)
       if (err) {
-        res.send({ result: "please provide valid token"});
-        console.log("err",err)
-      }else{
-    // res.send({result:result})
-  const userVerify= await register.findOne({email:email})
-  console.log("user",userVerify);
-  if (userVerify._id.toString()===result.data) {
-    // console.log("1",userVerify._id.toString());
-    next()
-  }else{
-    res.send({result:"User Id Not Match"})
-    console.log("match",userVerify._id);
-  } 
+        res.send({ result: "please provide valid token" });
+        console.log("err", err)
+      } else {
+        // res.send({result:result})
+        const userVerify = await register.findOne({ email: email })
+        console.log("user", userVerify);
+        if (userVerify._id.toString() === result.data) {
+          // console.log("1",userVerify._id.toString());
+          next()
+        } else {
+          res.send({ result: "User Id Not Match" })
+          console.log("match", userVerify._id);
+        }
       }
     });
-  }else{
-    res.send({result:"add token with Headers"})
+  } else {
+    res.send({ result: "add token with Headers" })
   }
 }
 
