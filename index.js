@@ -5,6 +5,7 @@ const loger = require("morgan");
 require("./db/config");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+const nodemailer = require('nodemailer');
 const secretKey = "sahaid";
 var jwt = require("jsonwebtoken");
 const register = require("./Models/Register");
