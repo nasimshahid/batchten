@@ -19,18 +19,19 @@ app.post("/register", async (req, res) => {
   if (isExist) {
     res.send({result:"User Already Exist", code:204});
   } else {
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-        bcrypt.hash(password, salt ,async function (err, hash) {
-          let users = new register({
-            name:name,
-            email:email,
-            password:hash
-          });
-          let result = await users.save();
-          if (result) {
-            res.send({message:"Register SuccessFully",code:200,result});
-          }        
-        });
+    bcrypt.genSalt(10, function (err, salt) {
+      bcrypt.hash(password, salt, async function (err, hash) {
+        const data = {
+          name: name,
+          email: email,
+          password: hash,
+        };  
+        let users = new register(data);
+        let result = await users.save();
+        if (result) {
+          res.send({ message: "Register SuccessFully", code: 200 });
+        }
+      });
     });
   }});
 // Login Api
@@ -45,13 +46,13 @@ app.post("/login", async (req, res) => {
         });
         isExist.token=token
         await isExist.save()
-        res.send({ result: "Login SuccessFully", token: token });
+        res.send({statusCode:200, result: "Login SuccessFully", token: token,user:isExist });
       } else {
-        res.send({ result: "password not match" });
+        res.send({statusCode:300, result: "password not match" });
       }
     });
   } else {
-    res.send({ result: "User Not Found" });
+    res.send({statusCode:404, result: "User Not Found" });
   }
 });
 
