@@ -5,7 +5,6 @@ const loger = require("morgan");
 require("./db/config");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const nodemailer = require('nodemailer');
 const secretKey = "sahaid";
 var jwt = require("jsonwebtoken");
 const register = require("./Models/Register");
@@ -96,51 +95,5 @@ async function verifyToken(req, res, next) {
     res.send({result:"add token with Headers"})
   }
 }
-
-
-// Mail Sent
-app.post("/forgotPassword",async(req,res)=>{
-  const {email}=req.body
-    const isExistEmail=await register.findOne({email:email})
-    if (isExistEmail) {
-  let otp =""
-  for (let i = 1; i <=6; i++) {
-     otp +=Math.floor(Math.random()*9) 
-  }
-  const transport = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "snasim1786@gmail.com",
-      pass: "pmujgadapmriwrll",
-    },
-  });
-  
-  console.log("transport",transport);
-      let mailDetails = {
-        from:transport.options.auth.user,
-        to: `${email}`,
-        subject: 'Test mail',
-        text: ` Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptate vitae ad esse fugiat eos quae beatae minima mollitia praesentium aliquam ${otp} `
-    }
-  
-    console.log("mailDetails",mailDetails);
-    transport.sendMail(mailDetails, async function(err, data) {
-      console.log("data",data);
-      if(err) {
-         res.send({message:'Error Occurs'});
-      } else {
-        isExistEmail.otp=otp
-        await isExistEmail.save()
-          res.send({message:'Email sent successfully',isExistEmail:otp});
-      }
-  });
-  }else{
-      res.send({message:"User Not Found"})
-    }
-  })
-
-
-
-
 
 app.listen(3000);
