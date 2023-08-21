@@ -29,7 +29,7 @@ app.post("/register", async (req, res) => {
         let users = new register(data);
         let result = await users.save();
         if (result) {
-          res.send({ result: "Register SuccessFully", code: 200 });
+          res.send({ message: "Register SuccessFully", code: 200 });
         }
       });
     });
@@ -46,7 +46,7 @@ app.post("/login", async (req, res) => {
         });
         isExist.token=token
         await isExist.save()
-        res.send({ result: "Login SuccessFully", token: token });
+        res.send({ result: "Login SuccessFully", token: token,user:isExist });
       } else {
         res.send({ result: "password not match" });
       }
