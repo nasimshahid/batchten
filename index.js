@@ -46,13 +46,13 @@ app.post("/login", async (req, res) => {
         });
         isExist.token=token
         await isExist.save()
-        res.send({ result: "Login SuccessFully", token: token,user:isExist });
+        res.send({statusCode:200, result: "Login SuccessFully", token: token,user:isExist });
       } else {
-        res.send({ result: "password not match" });
+        res.send({statusCode:300, result: "password not match" });
       }
     });
   } else {
-    res.send({ result: "User Not Found" });
+    res.send({statusCode:404, result: "User Not Found" });
   }
 });
 
