@@ -141,13 +141,10 @@ app.post("/forgotPassword",async(req,res)=>{
 
   // optMatch
 
-  app.post("/otpMatch/:id",async(req,res)=>{
-const {otp}=req.body
+  app.post("/otpMatch",async(req,res)=>{
+const {otp,id}=req.body
 console.log('otpnew',otp)
-// console.log(req.body)
-const userId=req.params.id
-// console.log('eq.param',req.params.id)
-const isExistEmail=await register.findOne({_id:userId})
+const isExistEmail=await register.findOne({_id:id})
 console.log("otp",isExistEmail);
 
 if(isExistEmail?.otp==otp){
