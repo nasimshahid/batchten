@@ -144,8 +144,6 @@ app.post("/forgotPassword",async(req,res)=>{
   app.post("/otpMatch",async(req,res)=>{
 const {otp,id}=req.body
 console.log('otpnew',otp)
-// console.log(req.body)
-// console.log('eq.param',req.params.id)
 const isExistEmail=await register.findOne({_id:id})
 console.log("otp",isExistEmail);
 
