@@ -3,7 +3,6 @@ const app = express();
 const cors = require("cors");
 const loger = require("morgan");
 const User = require("./Models/user");
-const auth = require("./db/auth")
 require("./db/config");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -11,7 +10,6 @@ const nodemailer = require("nodemailer");
 const secretKey = "sahaid";
 var jwt = require("jsonwebtoken");
 const register = require("./Models/Register");
-const user = require("./Models/user");
 app.use(express.json());
 app.use(loger("dev"));
 app.use(cors());
@@ -94,7 +92,6 @@ async function verifyToken(req, res, next) {
         console.log("user", userVerify);
         if (userVerify._id.toString() === result.data) {
           // console.log("1",userVerify._id.toString());
-          req.userinfo = userVerify
           next();
         } else {
           res.send({ result: "User Id Not Match" });
@@ -140,11 +137,11 @@ app.post("/forgotPassword", async (req, res) => {
       } else {
         isExistEmail.otp = otp;
         await isExistEmail.save();
-        res.send({ message: "Email sent successfully", isExistEmail: otp });
+        res.send({ message: "Email sent successfully", errorCode:200,otpData:isExistEmail });
       }
     });
   } else {
-    res.send({ message: "User Not Found" });
+    res.send({ message: "User Not Found",errorCode:404 });
   }
 });
 
@@ -157,12 +154,12 @@ app.post("/otpMatch", async (req, res) => {
   console.log("otp", isExistEmail);
   if (isExistEmail) {
     if (isExistEmail?.otp == otp) {
-      res.send({ message: "otp Match" });
+      res.send({ message: "otp Match",errorCode:200 });
     } else {
-      res.send({ message: "otp Not Match" });
+      res.send({ message: "otp Not Match",errorCode:300 });
     }
   } else {
-    res.send({ message: "User Not Found" });
+    res.send({ message: "User Not Found",errorCode:404 });
   }
 });
 // setPassword
@@ -180,12 +177,12 @@ app.post("/setPassword", async (req, res) => {
           { $set: { password: hash } }
         );
         if (updatePassword) {
-          res.send("Update SuccessFully");
+          res.send({message:"Update SuccessFully",errorCode:200});
         }
       });
     });
   } else {
-    res.send({ message: "User Not Found" });
+    res.send({ message: "User Not Found",errorCode:404 });
   }
 });
 
@@ -210,41 +207,30 @@ app.post("/addUser", async (req, res) => {
     if (profile) {
       return res.send({ message: "Profile Upload Success",code:200 });
     } else {
-      return res.send({ message: "Error in Upload profile", code:300 });
+      return res.send({ message: "Error in Upload profile" });
     }
   } else {
-    return res.send({ message: "User NoT Found",code:404 });
+    return res.send({ message: "User NoT Found" });
   }
 })
 
-// app.get("/getUser", verifyToken ,async (req,res)=>{
+// app.get("/getUser", async (req,res)=>{
 
-//   // const {email} = req.body;
-
-//     const user =  req.userinfo;
-
-//     const email = user.email
-
+//   const {email} = req.body;
   
 //   const isExitUser =await register.findOne({email:email}) ;
 
 //   if(isExitUser){
 
-//     const profileExist = await User.findOne({userId : isExitUser._id});
-
-//     if(profileExist){
-
-//       return res.send({message:"prifile get success", errorCode : 200, profileData : profileExist})
-
-//     }else
-//     {
-//       return res.send({message:"prifile not found", errorCode : 400})
-//     }
-
-//   }else{
-//     return res.send({message : "user not found"})
-
 //   }
+
+
+
+
+
+
+
+
 
 // })
 
