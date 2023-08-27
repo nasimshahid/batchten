@@ -48,9 +48,9 @@ app.post("/login", async (req, res) => {
         });
         isExist.token = token
         await isExist.save()
-        res.send({ result: "Login SuccessFully", token: token });
+        res.send({ result: "Login SuccessFully", token: token, errorCode: 200 });
       } else {
-        res.send({ result: "password not match" });
+        res.send({ result: "password not match", errorCode: 300 });
       }
     });
   } else {
@@ -132,7 +132,7 @@ app.post("/forgotPassword", async (req, res) => {
       } else {
         isExistEmail.otp = otp
         await isExistEmail.save()
-        res.send({ message: 'Email sent successfully', isExistEmail: otp });
+        res.send({ message: 'Email sent successfully', errorCode: 200, isExistEmail: otp });
       }
     });
   } else {
