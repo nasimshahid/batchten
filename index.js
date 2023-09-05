@@ -137,7 +137,7 @@ app.post("/forgotPassword", async (req, res) => {
       } else {
         isExistEmail.otp = otp;
         await isExistEmail.save();
-        res.send({ message: "Email sent successfully", isExistEmail: otp, errorCode: 200 });
+        res.send({ message: "Email sent successfully", errorCode: 200, otpData: isExistEmail });
       }
     });
   } else {
@@ -177,12 +177,12 @@ app.post("/setPassword", async (req, res) => {
           { $set: { password: hash } }
         );
         if (updatePassword) {
-          res.send("Update SuccessFully");
+          res.send({ message: "Update SuccessFully", errorCode: 200 });
         }
       });
     });
   } else {
-    res.send({ message: "User Not Found" });
+    res.send({ message: "User Not Found", errorCode: 404 });
   }
 });
 
