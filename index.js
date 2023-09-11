@@ -189,29 +189,26 @@ app.post("/setPassword", async (req, res) => {
 // Insert Users
 app.post("/addUser", async (req, res) => {
   const { name, adress, mobileNo, dateOfBith, email } = req.body;
-
-  // console.log(name,adress,mobileNo,dateOfBith);
-
   const isExist = await register.findOne({ email: email });
-
-  console.log("isExist",isExist);
-  if (isExist) {
-    const profile = await User.create({
-      userId: isExist._id,
-      name: name,
-      adress: adress,
-      mobileNo: mobileNo,
-      dateOfBith: dateOfBith,
-    });
-    console.log("profile",profile);
-    if (profile) {
-      return res.send({ message: "Profile Upload Success",code:200 });
-    } else {
-      return res.send({ message: "Error in Upload profile" });
-    }
-  } else {
-    return res.send({ message: "User NoT Found" });
+if (isExist) {
+  const data={
+    userId:isExist._id,
+    name:name,
+    adress:adress,
+    mobileNo:mobileNo,
+    dateOfBith:dateOfBith
   }
+let addUser= new User(data)
+let result = await addUser.save()
+if (result) {
+  return res.send({message:"Profile Upload",errorCode:200})
+}else{
+  return res.send({message:" Error in Profile Upload",errorCode:300})
+}
+}
+else{
+  return res.send({message:"Email Not Exist",errorCode:404})
+}
 })
 
 // app.get("/getUser", async (req,res)=>{
