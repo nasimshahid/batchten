@@ -137,11 +137,11 @@ app.post("/forgotPassword", async (req, res) => {
       } else {
         isExistEmail.otp = otp;
         await isExistEmail.save();
-        res.send({ message: "Email sent successfully", errorCode:200,otpData:isExistEmail });
+        res.send({ message: "Email sent successfully", errorCode: 200, otpData: isExistEmail });
       }
     });
   } else {
-    res.send({ message: "User Not Found",errorCode:404 });
+    res.send({ message: "User Not Found", errorCode: 404 });
   }
 });
 
@@ -154,12 +154,12 @@ app.post("/otpMatch", async (req, res) => {
   console.log("otp", isExistEmail);
   if (isExistEmail) {
     if (isExistEmail?.otp == otp) {
-      res.send({ message: "otp Match",errorCode:200 });
+      res.send({ message: "otp Match", errorCode: 200 });
     } else {
-      res.send({ message: "otp Not Match",errorCode:300 });
+      res.send({ message: "otp Not Match", errorCode: 300 });
     }
   } else {
-    res.send({ message: "User Not Found",errorCode:404 });
+    res.send({ message: "User Not Found", errorCode: 404 });
   }
 });
 // setPassword
@@ -177,12 +177,12 @@ app.post("/setPassword", async (req, res) => {
           { $set: { password: hash } }
         );
         if (updatePassword) {
-          res.send({message:"Update SuccessFully",errorCode:200});
+          res.send({ message: "Update SuccessFully", errorCode: 200 });
         }
       });
     });
   } else {
-    res.send({ message: "User Not Found",errorCode:404 });
+    res.send({ message: "User Not Found", errorCode: 404 });
   }
 });
 
@@ -190,45 +190,90 @@ app.post("/setPassword", async (req, res) => {
 app.post("/addUser", async (req, res) => {
   const { name, adress, mobileNo, dateOfBith, email } = req.body;
   const isExist = await register.findOne({ email: email });
-if (isExist) {
-  const data={
-    userId:isExist._id,
-    name:name,
-    adress:adress,
-    mobileNo:mobileNo,
-    dateOfBith:dateOfBith
+  if (isExist) {
+    const data = {
+      userId: isExist._id,
+      name: name,
+      adress: adress,
+      mobileNo: mobileNo,
+      dateOfBith: dateOfBith,
+
+    }
+    let addUser = new User(data)
+    let result = await addUser.save()
+    if (result) {
+      return res.send({result:result, message: "Profile Upload", errorCode: 200 })
+    } else {
+      return res.send({ message: " Error in Profile Upload", errorCode: 300 })
+    }
   }
-let addUser= new User(data)
-let result = await addUser.save()
-if (result) {
-  return res.send({message:"Profile Upload",errorCode:200})
-}else{
-  return res.send({message:" Error in Profile Upload",errorCode:300})
-}
-}
-else{
-  return res.send({message:"Email Not Exist",errorCode:404})
-}
+  else {
+    return res.send({ message: "Email Not Exist", errorCode: 404 })
+  }
 })
+
+app.get("/addUserList", async (req, res) => {
+  const  userId  = req.query.id
+console.log(userId,"userId");
+  const isExist = await User.find({ userId: userId })
+  console.log(isExist,"isExist");
+  if (isExist) {
+    
+    return res.send({ result: isExist, errorCode: 200 })
+  } else {
+   return res.send({ result: "NO Product", errorCode: 300 })
+  }
+})
+// Delete Api
+
+app.delete("/deleteProfile", async (req, res) => {
+  const { id } = req.body
+  // console.log("id", id);
+  const proFileDelete = await User.deleteOne({ _id: id })
+  if (proFileDelete) {
+    return res.send({ result: "Profile Delete SuccessFullt" })
+  }
+  else {
+    res.send({ result: "Something Went Wrong" })
+  }
+})
+// Edit Api
+app.get("/getProfileList/:id", async (req, res) => {
+  const { id } = req.params
+  console.log(id, "id");
+  const getProfile = await User.find({ _id: id })
+  // console.log(getProfile, "getProfile");
+  if (getProfile) {
+    return res.send({ result: getProfile, errorCode: 200 })
+  } else {
+    return res.send({ result: "SomeThing Went Wrong", errorCode: 404 })
+  }
+
+})
+
+app.put("/profileEdit", async (req, res) => {
+  const { id } = req.body
+  const EditProfile = await User.updateOne({ _id: id }, { $set: req.body })
+  console.log("EditProfile", EditProfile);
+  if (EditProfile) {
+    return res.send({ result: EditProfile, errorCode: 200 })
+  } else {
+    return res.send({ result: "Somthing Wrong" })
+  }
+})
+
+
+
 
 // app.get("/getUser", async (req,res)=>{
 
 //   const {email} = req.body;
-  
+
 //   const isExitUser =await register.findOne({email:email}) ;
 
 //   if(isExitUser){
 
 //   }
-
-
-
-
-
-
-
-
-
 // })
 
 
@@ -236,4 +281,3 @@ else{
 
 
 app.listen(3000);
- 
