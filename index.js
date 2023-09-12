@@ -189,30 +189,78 @@ app.post("/setPassword", async (req, res) => {
 // Insert Users
 app.post("/addUser", async (req, res) => {
   const { name, adress, mobileNo, dateOfBith, email } = req.body;
-
-  // console.log(name,adress,mobileNo,dateOfBith);
-
   const isExist = await register.findOne({ email: email });
-
-  console.log("isExist", isExist);
   if (isExist) {
-    const profile = await User.create({
+    const data = {
       userId: isExist._id,
       name: name,
       adress: adress,
       mobileNo: mobileNo,
       dateOfBith: dateOfBith,
-    });
-    console.log("profile", profile);
-    if (profile) {
-      return res.send({ message: "Profile Upload Success", code: 200 });
-    } else {
-      return res.send({ message: "Error in Upload profile" });
+
     }
-  } else {
-    return res.send({ message: "User NoT Found" });
+    let addUser = new User(data)
+    let result = await addUser.save()
+    if (result) {
+      return res.send({ message: "Profile Upload", errorCode: 200 })
+    } else {
+      return res.send({ message: " Error in Profile Upload", errorCode: 300 })
+    }
+  }
+  else {
+    return res.send({ message: "Email Not Exist", errorCode: 404 })
   }
 })
+
+app.get("/addUserList", async (req, res) => {
+  const { userId } = req.body
+  const isExist = await User.find({ userId: userId })
+  if (isExist.length > 0) {
+    return res.send({ result: isExist, errorCode: 200 })
+  } else {
+    res.send({ result: "NO Product", errorCode: 300 })
+  }
+})
+// Delete Api
+
+app.delete("/deleteProfile", async (req, res) => {
+  const { id } = req.body
+  // console.log("id", id);
+  const proFileDelete = await User.deleteOne({ _id: id })
+  if (proFileDelete) {
+    return res.send({ result: "Profile Delete SuccessFullt" })
+  }
+  else {
+    res.send({ result: "Something Went Wrong" })
+  }
+})
+// Edit Api
+app.get("/getProfileList/:id", async (req, res) => {
+  const { id } = req.params
+  console.log(id, "id");
+  const getProfile = await User.find({ _id: id })
+  // console.log(getProfile, "getProfile");
+  if (getProfile) {
+    return res.send({ result: getProfile, errorCode: 200 })
+  } else {
+    return res.send({ result: "SomeThing Went Wrong", errorCode: 404 })
+  }
+
+})
+
+app.put("/profileEdit", async (req, res) => {
+  const { id } = req.body
+  const EditProfile = await User.updateOne({ _id: id }, { $set: req.body })
+  console.log("EditProfile", EditProfile);
+  if (EditProfile) {
+    return res.send({ result: EditProfile, errorCode: 200 })
+  } else {
+    return res.send({ result: "Somthing Wrong" })
+  }
+})
+
+
+
 
 // app.get("/getUser", async (req,res)=>{
 
@@ -223,15 +271,6 @@ app.post("/addUser", async (req, res) => {
 //   if(isExitUser){
 
 //   }
-
-
-
-
-
-
-
-
-
 // })
 
 
