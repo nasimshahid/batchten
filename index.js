@@ -202,7 +202,7 @@ app.post("/addUser", async (req, res) => {
     let addUser = new User(data)
     let result = await addUser.save()
     if (result) {
-      return res.send({ message: "Profile Upload", errorCode: 200 })
+      return res.send({ message: result, errorCode: 200 })
     } else {
       return res.send({ message: " Error in Profile Upload", errorCode: 300 })
     }
@@ -215,7 +215,7 @@ app.post("/addUser", async (req, res) => {
 app.get("/addUserList", async (req, res) => {
   const { userId } = req.body
   const isExist = await User.find({ userId: userId })
-  if (isExist.length > 0) {
+  if ( isExist && isExist.length > 0) {
     return res.send({ result: isExist, errorCode: 200 })
   } else {
     res.send({ result: "NO Product", errorCode: 300 })
@@ -252,7 +252,7 @@ app.put("/profileEdit", async (req, res) => {
   const { id } = req.body
   const EditProfile = await User.updateOne({ _id: id }, { $set: req.body })
   console.log("EditProfile", EditProfile);
-  if (EditProfile) {
+  if (EditProfile.nModified>0) {
     return res.send({ result: EditProfile, errorCode: 200 })
   } else {
     return res.send({ result: "Somthing Wrong" })
