@@ -226,8 +226,8 @@ console.log(userId,"userId");
 })
 // Delete Api
 
-app.delete("/deleteProfile", async (req, res) => {
-  const { id } = req.body
+app.delete("/deleteProfile/:id", async (req, res) => {
+  const  id  = req.params.id
   // console.log("id", id);
   const proFileDelete = await User.deleteOne({ _id: id })
   if (proFileDelete) {
@@ -251,10 +251,11 @@ app.get("/getProfileList/:id", async (req, res) => {
 
 })
 
-app.put("/profileEdit", async (req, res) => {
-  const { id } = req.body
+app.put("/profileEdit/:id", async (req, res) => {
+  const  {id}  = req.params
+  console.log(req.query,"id");
   const EditProfile = await User.updateOne({ _id: id }, { $set: req.body })
-  console.log("EditProfile", EditProfile);
+  console.log("EditProfile", EditProfile)
   if (EditProfile) {
     return res.send({ result: EditProfile, errorCode: 200 })
   } else {
